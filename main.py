@@ -26,7 +26,7 @@ def read_temperature():
         response = requests.get(OPEN_SENSE_MAP_URL, timeout=10)
         response.raise_for_status() # التأكد من أن الـ API الخارجي يعمل
         data = response.json()
-    except Exception as e:
+    except (requests.exceptions.Timeout, requests.exceptions.RequestException) as e:
         return {"error": "Could not fetch data from openSenseMap", "details": str(e)}
 
     temperatures = []
