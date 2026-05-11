@@ -52,4 +52,133 @@ Here is a pre-start checklist:
 
 ## Implementation
 
-** ADD YOUR IMPLEMENTATION DOCUMENTATION HERE **
+### Project Overview
+
+HiveBox is a Python-based application that reports its current version. The entry point is `main.py`, which prints the application version and exits cleanly. It is containerized using Docker with a lightweight `python:3.11-slim` base image.
+
+---
+
+## Testing the Application
+
+This section documents how to test the HiveBox application both locally and inside a Docker container.
+
+### Prerequisites
+
+| Tool | Minimum Version | Purpose |
+|------|----------------|---------|
+| Python | 3.11+ | Run the app locally |
+| Docker | 20.10+ | Build and run the containerized app |
+
+> [!NOTE]
+> Docker Desktop must be running before executing any Docker commands.
+> You can verify Docker is running with: `docker info`
+
+---
+
+### 1. Local Testing (Python)
+
+Run the application directly with Python to verify it prints the version and exits with code `0`.
+
+```bash
+# From the project root directory
+python main.py
+```
+
+**Expected output:**
+```
+$v0.0.1
+```
+
+**Expected exit code:** `0`
+
+To check the exit code explicitly on Windows PowerShell:
+
+```powershell
+python main.py
+echo $LASTEXITCODE   # Should print: 0
+```
+
+---
+
+### 2. Docker Build Testing
+
+Build the Docker image to verify the `Dockerfile` is valid and the image compiles successfully.
+
+```bash
+docker build -t hivebox:local .
+```
+
+**Expected output:** A successful build ending with a line similar to:
+```
+Successfully tagged hivebox:local
+```
+
+Verify the image was created:
+
+```bash
+docker images hivebox
+```
+
+---
+
+### 3. Docker Run Testing
+
+Run the container and verify the application produces the correct output.
+
+```bash
+docker run --rm hivebox:local
+```
+
+**Expected output:**
+```
+$v0.0.1
+```
+
+**Expected container exit code:** `0`
+
+To capture and verify the exit code in PowerShell:
+
+```powershell
+docker run --rm hivebox:local
+echo $LASTEXITCODE   # Should print: 0
+```
+
+---
+
+### 4. Dockerfile Linting (Hadolint)
+
+Lint the `Dockerfile` with [Hadolint](https://github.com/hadolint/hadolint) to catch best-practice violations before building.
+
+```bash
+hadolint Dockerfile
+```
+
+**Expected output:** No warnings or errors (silent output = pass).
+
+> [!TIP]
+> If Hadolint is not installed, you can run it via Docker without a local install:
+> ```bash
+> docker run --rm -i hadolint/hadolint < Dockerfile
+> ```
+
+---
+
+### 5. Full Test Checklist
+
+Use this checklist to confirm the application is working correctly end-to-end:
+
+- [ ] `python main.py` prints `$v0.0.1` and exits with code `0`
+- [ ] `docker build -t hivebox:local .` completes without errors
+- [ ] `docker run --rm hivebox:local` prints `$v0.0.1` and exits with code `0`
+- [ ] `hadolint Dockerfile` reports no linting issues
+
+---
+
+### Troubleshooting
+
+| Problem | Likely Cause | Fix |
+|---------|-------------|-----|
+| `docker: command not found` | Docker not installed | Install [Docker Desktop](https://www.docker.com/products/docker-desktop/) |
+| `error during connect` on `docker ps` | Docker Desktop is not running | Launch Docker Desktop from the system tray |
+| `python: command not found` | Python not on PATH | Install Python 3.11+ or use `python3` |
+| Container exits with code `1` | Application error in `main.py` | Check `main.py` for syntax/runtime errors |
