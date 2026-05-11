@@ -2,6 +2,7 @@
 import pytest
 from fastapi.testclient import TestClient
 from unittest.mock import patch
+from datetime import datetime, timezone, timedelta
 from main import app
 
 # نحن نستخدم TestClient لمحاكاة مستخدم يطلب البيانات من الـ API
@@ -24,16 +25,16 @@ def test_read_temperature_success():
                     "title": "Temperatur",
                     "unit": "°C",
                     "lastMeasurement": {
-                        "value": "20.0",
-                        "createdAt": "2026-05-11T14:00:00Z" # وقت حديث جداً
-                    }
+                            "value": "20.0",
+                            "createdAt": (datetime.now(timezone.utc) - timedelta(minutes=10)).strftime("%Y-%m-%dT%H:%M:%SZ")  # 10 دقائق مضت
+                        }
                 },
                 {
                     "title": "Temperatur",
                     "unit": "°C",
                     "lastMeasurement": {
                         "value": "30.0",
-                        "createdAt": "2026-05-11T14:10:00Z"
+                        "createdAt": (datetime.now(timezone.utc) - timedelta(minutes=5)).strftime("%Y-%m-%dT%H:%M:%SZ")  # 5 دقائق مضت
                     }
                 }
             ]
